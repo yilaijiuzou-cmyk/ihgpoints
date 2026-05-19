@@ -1,0 +1,16 @@
+{
+  "name": "IHG 积分价值评估",
+  "short_name": "IHG积分评估",
+  "description": "IHG 积分购买价值评估工具 —— 买分前算一算，到底值不值",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#003580",
+  "orientation": "portrait",
+  "categories": ["travel", "finance", "utilities"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#003580"/>
+  <text x="256" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="280" font-weight="bold" fill="#f9a51a">IHG</text>
+  <rect x="80" y="380" width="352" height="6" rx="3" fill="#f9a51a" opacity="0.6"/>
+  <circle cx="256" cy="180" r="60" fill="none" stroke="#f9a51a" stroke-width="8" opacity="0.4"/>
+  <text x="256" y="192" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#f9a51a" opacity="0.8">¥</text>
+</svg>

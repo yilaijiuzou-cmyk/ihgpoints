@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#003580">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IHG积分评估">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>IHG 积分购买价值评估</title>
+<style>
+  :root {
+    --primary: #003580;
+    --primary-light: #0057b3;
+    --primary-dark: #002266;
+    --accent: #f9a51a;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --green-border: #86efac;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --red-border: #fca5a5;
+    --yellow: #d97706;
+    --yellow-bg: #fef3c7;
+    --yellow-border: #fcd34d;
+    --card: #ffffff;
+    --bg: #f1f5f9;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    --border: #e2e8f0;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  *:focus-visible { outline: 2px solid var(--primary-light); outline-offset: 2px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "SF Pro Text", "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    padding: 24px 16px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -16px;
+    left: -10%;
+    width: 120%;
+    height: 32px;
+    background: var(--bg);
+    border-radius: 50% 50% 0 0;
+  }
+  .header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .header p { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+
+  /* ── Container ── */
+  .container { padding: 0 12px; position: relative; z-index: 1; }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    margin-top: 12px;
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── Banner: 汇率 + 标签 ── */
+  .banner {
+    background: linear-gradient(135deg, #eff6ff 0%, #f8faff 100%);
+    border: 1px solid #bfdbfe;
+    border-radius: var(--radius);
+    padding: 14px 12px;
+    margin-top: 12px;
+  }
+  .rate-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .rate-row .rate-label { font-size: 14px; font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .rate-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .rate-input-wrap input {
+    width: 80px;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+    font-family: inherit;
+    color: var(--text);
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -moz-appearance: textfield;
+  }
+  .rate-input-wrap input::-webkit-outer-spin-button,
+  .rate-input-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .rate-input-wrap input:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(0,87,179,0.15);
+  }
+  .rate-unit { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+
+  .tags-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-yellow { background: #fef3c7; color: #92400e; }
+  .tag-red { background: #fee2e2; color: #991b1b; }
+  .tag-dot { font-size: 10px; }
+
+  /* ── Input section ── */
+  .input-stack { display: flex; flex-direction: column; gap: 10px; }
+  .input-group { display: flex; flex-direction: column; gap: 4px; }
+  .input-group label { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+  .input-group input {
+    height: 44px;
+    padding: 0 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+    outline: none;
+    font-family: inherit;
+    color: var(--text);
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    -moz-appearance: textfield;
+  }
+  .input-group input::-webkit-outer-spin-button,
+  .input-group input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .input-group input:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(0,87,179,0.12);
+  }
+  .input-group input::placeholder { color: var(--text-light); font-weight: 400; }
+
+  /* ── Result ── */
+  .result-wrap {
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.3s ease;
+    max-height: 0;
+    opacity: 0;
+  }
+  .result-wrap.show {
+    max-height: 600px;
+    opacity: 1;
+  }
+  .result-box {
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    border-left: 4px solid transparent;
+  }
+  .result-box.green { background: var(--green-bg); border-left-color: var(--green); }
+  .result-box.yellow { background: var(--yellow-bg); border-left-color: var(--yellow); }
+  .result-box.red { background: var(--red-bg); border-left-color: var(--red); }
+
+  .result-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+
+  .result-hero {
+    text-align: center;
+    padding: 10px 0 12px;
+  }
+  .result-hero .hero-label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+  .result-hero .hero-value {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    margin-top: 2px;
+  }
+  .result-hero .hero-value .hero-unit { font-size: 14px; font-weight: 600; }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .stat-item {
+    background: rgba(255,255,255,0.6);
+    border-radius: var(--radius-xs);
+    padding: 8px 10px;
+  }
+  .stat-item .stat-label { font-size: 11px; color: var(--text-muted); }
+  .stat-item .stat-value { font-size: 15px; font-weight: 700; margin-top: 1px; }
+
+  .result-indicators {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: var(--radius-xs);
+  }
+  .indicator.ok { background: rgba(22,163,74,0.08); }
+  .indicator.warn { background: rgba(217,119,6,0.08); }
+  .indicator.fail { background: rgba(220,38,38,0.08); }
+
+  .result-advice {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.5);
+    border-radius: var(--radius-xs);
+  }
+
+  .result-box.green .hero-value { color: var(--green); }
+  .result-box.yellow .hero-value { color: var(--yellow); }
+  .result-box.red .hero-value { color: var(--red); }
+  .result-box.green .result-title { color: #166534; }
+  .result-box.yellow .result-title { color: #92400e; }
+  .result-box.red .result-title { color: #991b1b; }
+
+  /* ── Reference cards ── */
+  .ref-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .ref-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .ref-points {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .ref-tier {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+  .ref-tier.bad { color: #991b1b; }
+  .ref-tier.mid { color: #92400e; }
+  .ref-tier.good { color: #166534; }
+  .ref-tier .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .ref-tier .dot.bad { background: var(--red); }
+  .ref-tier .dot.mid { background: var(--yellow); }
+  .ref-tier .dot.good { background: var(--green); }
+  .ref-tier .tier-label { color: var(--text-muted); }
+  .ref-tier .tier-val { font-weight: 700; margin-left: auto; }
+
+  .ref-legend {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .ref-legend .legend-item { display: flex; align-items: center; gap: 4px; }
+  .ref-legend .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .ref-legend .legend-dot.bad { background: var(--red); }
+  .ref-legend .legend-dot.mid { background: var(--yellow); }
+  .ref-legend .legend-dot.good { background: var(--green); }
+
+  .ref-footnote {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 10px;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .ref-footnote b { color: var(--text-muted); }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 20px 12px 0;
+    font-size: 11px;
+    color: var(--text-light);
+    line-height: 1.8;
+  }
+  .footer a { color: var(--primary-light); text-decoration: none; }
+  .footer .update-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: 9px;
+    padding: 1px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card { animation: fadeUp 0.35s ease both; }
+  .card:nth-child(2) { animation-delay: 0.05s; }
+  .card:nth-child(3) { animation-delay: 0.1s; }
+
+  /* ── Dark mode support ── */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-light: #64748b;
+      --border: #334155;
+      --shadow: 0 1px 3px rgba(0,0,0,0.2);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.15);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.25);
+      --green-bg: #14532d;
+      --green-border: #22c55e;
+      --red-bg: #450a0a;
+      --red-border: #ef4444;
+      --yellow-bg: #451a03;
+      --yellow-border: #f59e0b;
+    }
+    .banner { background: linear-gradient(135deg, #172554 0%, #1e3a5f 100%); border-color: #1e40af; }
+    .banner .rate-label { color: #93c5fd; }
+    .rate-input-wrap input { background: #1e293b; color: #e2e8f0; border-color: #475569; }
+    .tag-green { background: #14532d; color: #bbf7d0; }
+    .tag-yellow { background: #451a03; color: #fde68a; }
+    .tag-red { background: #450a0a; color: #fecaca; }
+    .ref-card { background: #1e293b; }
+    .stat-item { background: rgba(0,0,0,0.2); }
+    .result-advice { background: rgba(0,0,0,0.15); }
+    .header::after { background: var(--bg); }
+  }
+
+  /* ── Wider phones / small tablets ── */
+  @media (min-width: 420px) {
+    .ref-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 600px) {
+    .container { padding: 0 20px; max-width: 520px; margin: 0 auto; }
+    .ref-grid { grid-template-columns: 1fr 1fr; }
+    .header h1 { font-size: 24px; }
+    .header { padding: 32px 24px 36px; }
+  }
+  @media (min-width: 900px) {
+    .container { max-width: 800px; }
+    .ref-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; }
+    .card { box-shadow: none; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ Header ═══ -->
+<header class="header">
+  <h1>IHG 积分价值评估</h1>
+  <p>买分前算一算，到底值不值</p>
+</header>
+
+<!-- ═══ Container ═══ -->
+<div class="container">
+
+  <!-- ── 汇率 Banner ── -->
+  <div class="banner">
+    <div class="rate-row">
+      <span class="rate-label">💱 汇率</span>
+      <div class="rate-input-wrap">
+        <input type="number" id="rate" value="6.8" step="0.01" min="5" max="10" inputmode="decimal">
+        <span class="rate-unit">USD → CNY</span>
+      </div>
+    </div>
+    <div class="tags-row">
+      <span class="tag tag-green"><span class="tag-dot">●</span> 100%加赠 <span id="tag-cost">¥363</span>/万分</span>
+      <span class="tag tag-yellow"><span class="tag-dot">●</span> 80%加赠 <span id="tag-80">¥403</span>/万分</span>
+      <span class="tag tag-red"><span class="tag-dot">●</span> 日常价 <span id="tag-full">¥725</span>/万分</span>
+    </div>
+  </div>
+
+  <!-- ── 查询目标酒店 ── -->
+  <div class="card">
+    <div class="card-title">🔍 查询目标酒店</div>
+    <div class="input-stack">
+      <div class="input-group">
+        <label for="target-cash">🏨 现金价（人民币）</label>
+        <input type="number" id="target-cash" value="2800" min="0" step="1" inputmode="numeric" placeholder="输入现金价 ¥">
+      </div>
+      <div class="input-group">
+        <label for="target-points">📌 所需积分</label>
+        <input type="number" id="target-points" value="72000" min="0" step="1000" inputmode="numeric" placeholder="输入所需积分">
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result-wrap" id="result-wrap">
+      <div class="result-box" id="result-box">
+        <div class="result-title" id="result-title"></div>
+
+        <div class="result-hero">
+          <div class="hero-label">每万分价值</div>
+          <div class="hero-value" id="rv-cny">¥0 <span class="hero-unit">/万分</span></div>
+        </div>
+
+        <div class="result-stats">
+          <div class="stat-item">
+            <div class="stat-label">100%促销买分<br>每晚成本</div>
+            <div class="stat-value" id="rv-cost">¥0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">每晚<br>节省 / 亏损</div>
+            <div class="stat-value" id="rv-save">¥0</div>
+          </div>
+        </div>
+
+        <div class="result-indicators">
+          <div class="indicator" id="rv-vs-cost">
+            <span>vs 成本线</span>
+          </div>
+          <div class="indicator" id="rv-vs-safe">
+            <span>vs 安全线</span>
+          </div>
+        </div>
+
+        <div class="result-advice" id="rv-advice"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 积分价 · 现金价对比参考 ── -->
+  <div class="card">
+    <div class="card-title">📊 积分价 · 现金价参考</div>
+    <div class="ref-grid" id="ref-grid"></div>
+    <div class="ref-legend">
+      <span class="legend-item"><span class="legend-dot bad"></span>不推荐</span>
+      <span class="legend-item"><span class="legend-dot mid"></span>谨慎</span>
+      <span class="legend-item"><span class="legend-dot good"></span>划算</span>
+    </div>
+    <div class="ref-footnote" id="ref-footnote"></div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <div class="footer">
+    数据仅供参考，以 IHG 官网实际兑换为准<br>
+    汇率联动，修改后所有数据自动更新<br>
+    首次汇率默认 6.8<br>
+    <span class="update-badge">v2.0</span> 移动优化版
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// Formula
+// ═══════════════════════════════════════════
+function per10kCNY(cash, points) {
+  if (!points || points <= 0) return 0;
+  return cash / points * 10000;
+}
+
+function fmt(v) { return Number(v).toFixed(0); }
+
+// ═══════════════════════════════════════════
+// Rate
+// ═══════════════════════════════════════════
+function getRate() {
+  return parseFloat(document.getElementById('rate').value) || 6.8;
+}
+
+function updateRateDisplay() {
+  const r = getRate();
+  const cost = Math.round(r * 50);
+  const safe = Math.round(r * 60);
+  const cost80 = Math.round(r * 55.56);
+  const costFull = Math.round(r * 100);
+  document.getElementById('tag-cost').textContent = '¥' + cost;
+  document.getElementById('tag-80').textContent = '¥' + cost80;
+  document.getElementById('tag-full').textContent = '¥' + costFull;
+}
+
+// ═══════════════════════════════════════════
+// Reference cards
+// ═══════════════════════════════════════════
+function buildRefCards() {
+  const rate = getRate();
+  const costLine = rate * 50;
+  const safeLine = rate * 60;
+
+  const ptsList = [10000, 12000, 15000, 18000, 20000, 22000, 25000, 30000, 35000, 40000, 50000, 60000, 70000, 80000];
+
+  const grid = document.getElementById('ref-grid');
+  let html = '';
+  ptsList.forEach(function(pts) {
+    const bad = costLine * pts / 10000;
+    const good = safeLine * pts / 10000;
+    html += '<div class="ref-card">'
+      + '<div class="ref-points">' + pts.toLocaleString() + '</div>'
+      + '<div class="ref-tier bad"><span class="dot bad"></span>不推荐 <span class="tier-val">&lt;¥' + fmt(bad) + '</span></div>'
+      + '<div class="ref-tier mid"><span class="dot mid"></span>谨慎 <span class="tier-val">¥' + fmt(bad) + '~¥' + fmt(good) + '</span></div>'
+      + '<div class="ref-tier good"><span class="dot good"></span>划算 <span class="tier-val">≥¥' + fmt(good) + '</span></div>'
+      + '</div>';
+  });
+  grid.innerHTML = html;
+
+  document.getElementById('ref-footnote').innerHTML =
+    '成本线 <b>¥' + fmt(costLine) + '</b>/万分（买分成本） · 安全线 <b>¥' + fmt(safeLine) + '</b>/万分（成本+20%）';
+}
+
+// ═══════════════════════════════════════════
+// Evaluate target hotel
+// ═══════════════════════════════════════════
+function evalTarget() {
+  const rate = getRate();
+  const cash = parseFloat(document.getElementById('target-cash').value);
+  const points = parseFloat(document.getElementById('target-points').value);
+  const wrap = document.getElementById('result-wrap');
+  const box = document.getElementById('result-box');
+  const costLine = rate * 50;
+  const safeLine = rate * 60;
+
+  if (!cash || !points || points <= 0) {
+    wrap.classList.remove('show');
+    return;
+  }
+
+  const val = per10kCNY(cash, points);
+  const buyCost = points / 10000 * costLine;
+  const saving = cash - buyCost;
+
+  // Hero
+  document.getElementById('rv-cny').innerHTML = '¥' + fmt(val) + ' <span class="hero-unit">/万分</span>';
+
+  // Stats
+  document.getElementById('rv-cost').textContent = '¥' + fmt(buyCost);
+  document.getElementById('rv-save').textContent = (saving >= 0 ? '+' : '') + '¥' + fmt(saving);
+
+  // Indicators
+  const vsCost = (val - costLine) / costLine * 100;
+  const vsSafe = (val - safeLine) / safeLine * 100;
+
+  const costEl = document.getElementById('rv-vs-cost');
+  costEl.className = 'indicator ' + (vsCost >= 0 ? 'ok' : 'fail');
+  costEl.innerHTML = vsCost >= 0
+    ? '<span>✅ 高出成本线 <b>+' + fmt(vsCost) + '%</b></span>'
+    : '<span>🔴 低于成本线 <b>' + fmt(vsCost) + '%</b></span>';
+
+  const safeEl = document.getElementById('rv-vs-safe');
+  if (val >= safeLine) {
+    safeEl.className = 'indicator ok';
+    safeEl.innerHTML = '<span>✅ 超过安全线 <b>+' + fmt(vsSafe) + '%</b></span>';
+  } else {
+    safeEl.className = 'indicator warn';
+    safeEl.innerHTML = '<span>⚠️ 距安全线还差 <b>' + fmt(Math.abs(vsSafe)) + '%</b></span>';
+  }
+
+  // Title & advice & color
+  let boxClass, title, advice;
+  if (val >= safeLine) {
+    boxClass = 'green';
+    title = '✅ 非常划算，强烈推荐！';
+    advice = '每万分价值 ¥' + fmt(val) + '，远高于成本线 ¥' + fmt(costLine) + '。'
+      + (saving > 0 ? '每晚会省 ¥' + fmt(saving) + '，比现金预订划算得多。' : '')
+      + '建议在 100% 加赠促销时买入积分后立即兑换。';
+  } else if (val >= costLine) {
+    boxClass = 'yellow';
+    title = '⚠️ 刚过成本线，谨慎考虑';
+    advice = '每万分价值 ¥' + fmt(val) + '，刚过成本线 ¥' + fmt(costLine) + '。'
+      + (saving >= 0
+        ? '每晚节省 ¥' + fmt(saving) + '，空间有限。已有积分可用，专门买分意义不大。'
+        : '每晚亏损 ¥' + fmt(Math.abs(saving)) + '，买分不划算。')
+      + '如果你手上已有积分，用出去不亏；但为这个酒店专门买分不值得。';
+  } else {
+    boxClass = 'red';
+    title = '🔴 低于成本线，别买分！';
+    advice = '每万分价值 ¥' + fmt(val) + '，低于成本线 ¥' + fmt(costLine) + '。'
+      + '每晚亏损 ¥' + fmt(Math.abs(saving)) + '，积分兑换反而亏钱。建议直接用现金预订。';
+  }
+
+  box.className = 'result-box ' + boxClass;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('rv-advice').textContent = advice;
+
+  wrap.classList.remove('show');
+  // Force reflow for animation restart
+  void wrap.offsetWidth;
+  wrap.classList.add('show');
+}
+
+// ═══════════════════════════════════════════
+// Init
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  const rateInput = document.getElementById('rate');
+  function onUpdate() {
+    updateRateDisplay();
+    buildRefCards();
+    evalTarget();
+  }
+  rateInput.addEventListener('input', onUpdate);
+  rateInput.addEventListener('change', onUpdate);
+
+  const cashInput = document.getElementById('target-cash');
+  const ptsInput = document.getElementById('target-points');
+  function onEval() { evalTarget(); }
+  cashInput.addEventListener('input', onEval);
+  cashInput.addEventListener('change', onEval);
+  ptsInput.addEventListener('input', onEval);
+  ptsInput.addEventListener('change', onEval);
+
+  onUpdate();
+
+  // ── Register service worker (PWA offline support) ──
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(function() {});
+  }
+});
+</script>
+</body>
+</html>
