@@ -1,0 +1,14 @@
+stages:
+  - deploy
+
+pages:
+  stage: deploy
+  script:
+    - mkdir -p public
+    - cp -r * public/ 2>/dev/null || true
+    - rm -f public/.codechina-ci.yml public/.git-credentials
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
