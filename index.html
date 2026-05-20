@@ -162,7 +162,8 @@
   .tag-dot { font-size: 10px; }
 
   /* ── Input section ── */
-  .input-stack { display: flex; flex-direction: column; gap: 10px; }
+  .input-stack { display: flex; flex-direction: row; gap: 10px; }
+  .input-stack .input-group { flex: 1; width: 0; min-width: 0; }
   .input-group { display: flex; flex-direction: column; gap: 4px; }
   .input-group label { font-size: 13px; font-weight: 500; color: var(--text-muted); }
   .input-group input {
