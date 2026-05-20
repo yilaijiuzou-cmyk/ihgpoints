@@ -568,16 +568,16 @@
       <div class="input-group">
         <label for="target-cash">🏨 现金价（人民币）</label>
         <div class="stepper">
-          <button class="stepper-btn minus" type="button" onclick="stepInput('target-cash',-1)">−</button>
-          <input type="number" id="target-cash" min="0" step="1" inputmode="numeric" placeholder="输入现金价 ¥">
-          <button class="stepper-btn plus" type="button" onclick="stepInput('target-cash',1)">+</button>
+          <button class="stepper-btn minus" type="button" onclick="stepInput('target-cash',-100)">−</button>
+          <input type="number" id="target-cash" value="350" min="0" step="100" inputmode="numeric" placeholder="输入现金价 ¥">
+          <button class="stepper-btn plus" type="button" onclick="stepInput('target-cash',100)">+</button>
         </div>
       </div>
       <div class="input-group">
         <label for="target-points">📌 所需积分</label>
         <div class="stepper">
           <button class="stepper-btn minus" type="button" onclick="stepInput('target-points',-1000)">−</button>
-          <input type="number" id="target-points" min="0" step="1000" inputmode="numeric" placeholder="输入所需积分">
+          <input type="number" id="target-points" value="10000" min="0" step="1000" inputmode="numeric" placeholder="输入所需积分">
           <button class="stepper-btn plus" type="button" onclick="stepInput('target-points',1000)">+</button>
         </div>
       </div>
@@ -661,6 +661,9 @@ function stepInput(id, delta) {
   const max = el.hasAttribute('max') ? parseFloat(el.getAttribute('max')) : Infinity;
   const cur = parseFloat(el.value) || 0;
   let val = Math.round((cur + delta) / step) * step;
+  // Fix floating point precision
+  const decimals = (String(step).split('.')[1] || '').length;
+  val = parseFloat(val.toFixed(decimals));
   val = Math.max(min, Math.min(max, val));
   el.value = val;
   el.dispatchEvent(new Event('input', { bubbles: true }));
