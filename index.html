@@ -188,6 +188,118 @@
   }
   .input-group input::placeholder { color: var(--text-light); font-weight: 400; }
 
+  /* ── Stepper ── */
+  .stepper {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .stepper:focus-within {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(0,87,179,0.12);
+  }
+  .stepper input {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    height: 44px;
+    width: 100%;
+    padding: 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    font-family: inherit;
+    color: var(--text);
+    background: transparent;
+    -moz-appearance: textfield;
+    min-width: 0;
+  }
+  .stepper input::-webkit-outer-spin-button,
+  .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .stepper-btn {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s;
+  }
+  .stepper-btn:active { background: var(--border); }
+  .stepper-btn.minus { border-right: 1px solid var(--border); }
+  .stepper-btn.plus { border-left: 1px solid var(--border); }
+
+  /* Rate stepper is smaller */
+  .rate-stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: #fff;
+    overflow: hidden;
+  }
+  .rate-stepper:focus-within { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(0,87,179,0.15); }
+  .rate-stepper input {
+    width: 56px;
+    height: 38px;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0 2px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    font-family: inherit;
+    color: var(--text);
+    background: transparent;
+    -moz-appearance: textfield;
+  }
+  .rate-stepper input::-webkit-outer-spin-button,
+  .rate-stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .rate-stepper .stepper-btn {
+    width: 30px;
+    height: 38px;
+    font-size: 16px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s;
+  }
+  .rate-stepper .stepper-btn:active { background: var(--border); }
+  .rate-stepper .stepper-btn.minus { border-right: 1px solid var(--border); }
+  .rate-stepper .stepper-btn.plus { border-left: 1px solid var(--border); }
+
+  @media (prefers-color-scheme: dark) {
+    .stepper { background: #1e293b; }
+    .stepper input { color: #e2e8f0; }
+    .stepper-btn { background: #0f172a; color: #e2e8f0; }
+    .stepper-btn:active { background: #334155; }
+    .rate-stepper { background: #1e293b; }
+    .rate-stepper input { color: #e2e8f0; }
+    .rate-stepper .stepper-btn { background: transparent; color: #e2e8f0; }
+    .rate-stepper .stepper-btn:active { background: #334155; }
+  }
+
   /* ── Result ── */
   .result-wrap {
     overflow: hidden;
@@ -433,7 +545,11 @@
     <div class="rate-row">
       <span class="rate-label">💱 汇率</span>
       <div class="rate-input-wrap">
-        <input type="number" id="rate" value="6.8" step="0.01" min="5" max="10" inputmode="decimal">
+        <div class="rate-stepper">
+          <button class="stepper-btn minus" type="button" onclick="stepInput('rate',-0.01)">−</button>
+          <input type="number" id="rate" value="6.8" step="0.01" min="5" max="10" inputmode="decimal">
+          <button class="stepper-btn plus" type="button" onclick="stepInput('rate',0.01)">+</button>
+        </div>
         <span class="rate-unit">USD → CNY</span>
       </div>
     </div>
@@ -450,11 +566,19 @@
     <div class="input-stack">
       <div class="input-group">
         <label for="target-cash">🏨 现金价（人民币）</label>
-        <input type="number" id="target-cash" value="2800" min="0" step="1" inputmode="numeric" placeholder="输入现金价 ¥">
+        <div class="stepper">
+          <button class="stepper-btn minus" type="button" onclick="stepInput('target-cash',-1)">−</button>
+          <input type="number" id="target-cash" min="0" step="1" inputmode="numeric" placeholder="输入现金价 ¥">
+          <button class="stepper-btn plus" type="button" onclick="stepInput('target-cash',1)">+</button>
+        </div>
       </div>
       <div class="input-group">
         <label for="target-points">📌 所需积分</label>
-        <input type="number" id="target-points" value="72000" min="0" step="1000" inputmode="numeric" placeholder="输入所需积分">
+        <div class="stepper">
+          <button class="stepper-btn minus" type="button" onclick="stepInput('target-points',-1000)">−</button>
+          <input type="number" id="target-points" min="0" step="1000" inputmode="numeric" placeholder="输入所需积分">
+          <button class="stepper-btn plus" type="button" onclick="stepInput('target-points',1000)">+</button>
+        </div>
       </div>
     </div>
 
@@ -510,7 +634,7 @@
     数据仅供参考，以 IHG 官网实际兑换为准<br>
     汇率联动，修改后所有数据自动更新<br>
     首次汇率默认 6.8<br>
-    <span class="update-badge">v2.0</span> 移动优化版
+    <span class="update-badge">Edit by yilaijiuzou</span>
   </div>
 
 </div>
@@ -525,6 +649,22 @@ function per10kCNY(cash, points) {
 }
 
 function fmt(v) { return Number(v).toFixed(0); }
+
+// ═══════════════════════════════════════════
+// Stepper
+// ═══════════════════════════════════════════
+function stepInput(id, delta) {
+  const el = document.getElementById(id);
+  const step = parseFloat(el.getAttribute('step')) || 1;
+  const min = el.hasAttribute('min') ? parseFloat(el.getAttribute('min')) : -Infinity;
+  const max = el.hasAttribute('max') ? parseFloat(el.getAttribute('max')) : Infinity;
+  const cur = parseFloat(el.value) || 0;
+  let val = Math.round((cur + delta) / step) * step;
+  val = Math.max(min, Math.min(max, val));
+  el.value = val;
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+}
 
 // ═══════════════════════════════════════════
 // Rate
