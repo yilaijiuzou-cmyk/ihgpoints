@@ -584,7 +584,7 @@
     </div>
 
     <!-- Result -->
-    <div class="result-wrap" id="result-wrap">
+    <div class="result-wrap" id="result-wrap" style="display:none;">
       <div class="result-box" id="result-box">
         <div class="result-title" id="result-title"></div>
 
@@ -747,7 +747,7 @@ function evalTarget() {
   const breakEvenLine = getBreakEvenLine();
 
   if (!cash || !points || points <= 0) {
-    wrap.classList.remove('show');
+    wrap.style.display = 'none';
     return;
   }
 
@@ -808,6 +808,7 @@ function evalTarget() {
   document.getElementById('result-title').textContent = title;
   document.getElementById('rv-advice').textContent = advice;
 
+  wrap.style.display = 'block';
   wrap.classList.remove('show');
   // Force reflow for animation restart
   void wrap.offsetWidth;
@@ -844,7 +845,7 @@ document.addEventListener('DOMContentLoaded', function() {
   updateCostDisplay();
 
   // ── Default state: hide result and ref table ──
-  document.getElementById('result-wrap').classList.remove('show');
+  document.getElementById('result-wrap').style.display = 'none';
   document.getElementById('ref-wrap').innerHTML = '';
 
   // ── Register service worker (PWA offline support) ──
