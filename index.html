@@ -386,44 +386,86 @@
   .result-box.yellow .result-title { color: #92400e; }
   .result-box.red .result-title { color: #991b1b; }
 
-  /* ── Reference cards ── */
-  .ref-grid {
+  /* ── Reference table ── */
+  .ref-wrap {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    gap: 8px;
   }
-  .ref-card {
-    background: var(--card);
+  .ref-table {
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    padding: 10px;
-    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    font-size: 11px;
   }
-  .ref-points {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 6px;
+  .ref-table .rt-head {
+    display: flex;
+    background: #f1f5f9;
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 1px solid var(--border);
   }
-  .ref-tier {
+  .ref-table .rt-head > div {
+    padding: 6px 3px;
+    text-align: center;
+  }
+  .ref-table .rt-head .col-pts { flex: 0 0 48px; }
+  .ref-table .rt-head .col-bad { flex: 1; background: #fee2e2; }
+  .ref-table .rt-head .col-mid { flex: 1; background: #fef3c7; }
+  .ref-table .rt-head .col-good { flex: 1; background: #dcfce7; }
+  .ref-table .rt-row {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+  .ref-table .rt-row:last-child { border-bottom: none; }
+  .ref-table .rt-row > div {
+    padding: 4px 3px;
+    text-align: center;
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-bottom: 2px;
-    font-weight: 500;
+    justify-content: center;
   }
-  .ref-tier.bad { color: #991b1b; }
-  .ref-tier.mid { color: #92400e; }
-  .ref-tier.good { color: #166534; }
-  .ref-tier .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .ref-tier .dot.bad { background: var(--red); }
-  .ref-tier .dot.mid { background: var(--yellow); }
-  .ref-tier .dot.good { background: var(--green); }
-  .ref-tier .tier-label { color: var(--text-muted); }
-  .ref-tier .tier-val { font-weight: 700; margin-left: auto; }
+  .ref-table .rt-row .col-pts {
+    flex: 0 0 48px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .ref-table .rt-row .col-bad { flex: 1; background: #fee2e2; color: #991b1b; }
+  .ref-table .rt-row .col-mid { flex: 1; background: #fef3c7; color: #92400e; }
+  .ref-table .rt-row .col-good { flex: 1; background: #dcfce7; color: #166534; }
+
+  .ref-legend {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .ref-legend .legend-item { display: flex; align-items: center; gap: 4px; }
+  .ref-legend .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .ref-legend .legend-dot.bad { background: var(--red); }
+  .ref-legend .legend-dot.mid { background: var(--yellow); }
+  .ref-legend .legend-dot.good { background: var(--green); }
+
+  .ref-footnote {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 10px;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .ref-footnote b { color: var(--text-muted); }
+
+  @media (prefers-color-scheme: dark) {
+    .ref-table { border-color: #334155; }
+    .ref-table .rt-head { background: #1e293b; color: #94a3b8; }
+    .ref-table .rt-row { border-color: #334155; }
+    .ref-table .rt-row .col-pts { color: #93c5fd; }
+    .ref-table .rt-row .col-bad { background: #450a0a; color: #fecaca; }
+    .ref-table .rt-row .col-mid { background: #451a03; color: #fde68a; }
+    .ref-table .rt-row .col-good { background: #14532d; color: #bbf7d0; }
+  }
 
   .ref-legend {
     display: flex;
@@ -621,7 +663,7 @@
   <!-- ── 积分价 · 现金价对比参考 ── -->
   <div class="card">
     <div class="card-title">📊 积分价 · 现金价参考</div>
-    <div class="ref-grid" id="ref-grid"></div>
+    <div class="ref-wrap" id="ref-wrap"></div>
     <div class="ref-legend">
       <span class="legend-item"><span class="legend-dot bad"></span>不推荐</span>
       <span class="legend-item"><span class="legend-dot mid"></span>谨慎</span>
@@ -689,28 +731,38 @@ function updateRateDisplay() {
 }
 
 // ═══════════════════════════════════════════
-// Reference cards
+// Reference tables (two-column, static HTML)
 // ═══════════════════════════════════════════
+function buildRefTable(tableId, ptsList) {
+  const rate = getRate();
+  const costLine = rate * 50;
+  const safeLine = rate * 60;
+
+  let html = '<div class="rt-head"><div class="col-pts">积分</div><div class="col-bad">不推荐</div><div class="col-mid">谨慎</div><div class="col-good">划算</div></div>';
+  ptsList.forEach(function(pts) {
+    const bad = costLine * pts / 10000;
+    const good = safeLine * pts / 10000;
+    html += '<div class="rt-row">'
+      + '<div class="col-pts">' + pts.toLocaleString() + '</div>'
+      + '<div class="col-bad">&lt;¥' + fmt(bad) + '</div>'
+      + '<div class="col-mid">¥' + fmt(bad) + '~' + fmt(good) + '</div>'
+      + '<div class="col-good">≥¥' + fmt(good) + '</div>'
+      + '</div>';
+  });
+  return html;
+}
+
 function buildRefCards() {
   const rate = getRate();
   const costLine = rate * 50;
   const safeLine = rate * 60;
 
-  const ptsList = [10000, 12000, 15000, 18000, 20000, 22000, 25000, 30000, 35000, 40000, 50000, 60000, 70000, 80000];
+  const ptsLeft = [10000, 12000, 15000, 18000, 20000, 22000, 25000, 30000];
+  const ptsRight = [35000, 40000, 50000, 60000, 70000, 80000];
 
-  const grid = document.getElementById('ref-grid');
-  let html = '';
-  ptsList.forEach(function(pts) {
-    const bad = costLine * pts / 10000;
-    const good = safeLine * pts / 10000;
-    html += '<div class="ref-card">'
-      + '<div class="ref-points">' + pts.toLocaleString() + '</div>'
-      + '<div class="ref-tier bad"><span class="dot bad"></span>不推荐 <span class="tier-val">&lt;¥' + fmt(bad) + '</span></div>'
-      + '<div class="ref-tier mid"><span class="dot mid"></span>谨慎 <span class="tier-val">¥' + fmt(bad) + '~¥' + fmt(good) + '</span></div>'
-      + '<div class="ref-tier good"><span class="dot good"></span>划算 <span class="tier-val">≥¥' + fmt(good) + '</span></div>'
-      + '</div>';
-  });
-  grid.innerHTML = html;
+  const wrap = document.getElementById('ref-wrap');
+  wrap.innerHTML = '<div class="ref-table">' + buildRefTable('tbl-left', ptsLeft) + '</div>'
+    + '<div class="ref-table">' + buildRefTable('tbl-right', ptsRight) + '</div>';
 
   document.getElementById('ref-footnote').innerHTML =
     '成本线 <b>¥' + fmt(costLine) + '</b>/万分（买分成本） · 安全线 <b>¥' + fmt(safeLine) + '</b>/万分（成本+20%）';
