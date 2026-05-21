@@ -164,6 +164,17 @@
   }
   .input-group input::placeholder { color: var(--text-light); font-weight: 400; }
 
+  .stepper-unit {
+    flex-shrink: 0;
+    padding: 0 6px 0 2px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    user-select: none;
+  }
+
   /* ── Stepper ── */
   .stepper {
     display: flex;
@@ -539,10 +550,11 @@
         </div>
       </div>
       <div class="input-group">
-        <label for="bonus">📊 积分加赠比例（%）</label>
+        <label for="bonus">📊 积分加赠比例</label>
         <div class="stepper">
           <button class="stepper-btn minus" type="button" onclick="stepInput('bonus',-10)">−</button>
           <input type="number" id="bonus" value="100" min="0" max="500" step="10" inputmode="numeric">
+          <span class="stepper-unit">%</span>
           <button class="stepper-btn plus" type="button" onclick="stepInput('bonus',10)">+</button>
         </div>
       </div>
