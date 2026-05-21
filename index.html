@@ -467,29 +467,6 @@
     .ref-table .rt-row .col-good { background: #14532d; color: #bbf7d0; }
   }
 
-  .ref-legend {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin-top: 10px;
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-  .ref-legend .legend-item { display: flex; align-items: center; gap: 4px; }
-  .ref-legend .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-  .ref-legend .legend-dot.bad { background: var(--red); }
-  .ref-legend .legend-dot.mid { background: var(--yellow); }
-  .ref-legend .legend-dot.good { background: var(--green); }
-
-  .ref-footnote {
-    font-size: 11px;
-    color: var(--text-light);
-    margin-top: 10px;
-    text-align: center;
-    line-height: 1.6;
-  }
-  .ref-footnote b { color: var(--text-muted); }
-
   /* ── Footer ── */
   .footer {
     text-align: center;
@@ -666,7 +643,7 @@
     <div class="ref-wrap" id="ref-wrap"></div>
     <div class="ref-legend">
       <span class="legend-item"><span class="legend-dot bad"></span>不推荐</span>
-      <span class="legend-item"><span class="legend-dot mid"></span>谨慎</span>
+      <span class="legend-item"><span class="legend-dot mid"></span>保本</span>
       <span class="legend-item"><span class="legend-dot good"></span>划算</span>
     </div>
     <div class="ref-footnote" id="ref-footnote"></div>
@@ -736,12 +713,12 @@ function updateRateDisplay() {
 function buildRefTable(tableId, ptsList) {
   const rate = getRate();
   const costLine = rate * 50;
-  const safeLine = rate * 60;
+  const breakEvenLine = costLine * 1.1;
 
-  let html = '<div class="rt-head"><div class="col-pts">积分</div><div class="col-bad">不推荐</div><div class="col-mid">谨慎</div><div class="col-good">划算</div></div>';
+  let html = '<div class="rt-head"><div class="col-pts">积分</div><div class="col-bad">不推荐</div><div class="col-mid">保本</div><div class="col-good">划算</div></div>';
   ptsList.forEach(function(pts) {
     const bad = costLine * pts / 10000;
-    const good = safeLine * pts / 10000;
+    const good = breakEvenLine * pts / 10000;
     html += '<div class="rt-row">'
       + '<div class="col-pts">' + pts.toLocaleString() + '</div>'
       + '<div class="col-bad">&lt;¥' + fmt(bad) + '</div>'
@@ -755,17 +732,17 @@ function buildRefTable(tableId, ptsList) {
 function buildRefCards() {
   const rate = getRate();
   const costLine = rate * 50;
-  const safeLine = rate * 60;
+  const breakEvenLine = costLine * 1.1;
 
   const ptsLeft = [10000, 12000, 15000, 18000, 20000, 22000, 25000, 30000];
-  const ptsRight = [35000, 40000, 50000, 60000, 70000, 80000];
+  const ptsRight = [35000, 40000, 50000, 60000, 70000, 80000, 90000, 100000];
 
   const wrap = document.getElementById('ref-wrap');
   wrap.innerHTML = '<div class="ref-table">' + buildRefTable('tbl-left', ptsLeft) + '</div>'
     + '<div class="ref-table">' + buildRefTable('tbl-right', ptsRight) + '</div>';
 
   document.getElementById('ref-footnote').innerHTML =
-    '成本线 <b>¥' + fmt(costLine) + '</b>/万分（买分成本） · 安全线 <b>¥' + fmt(safeLine) + '</b>/万分（成本+20%）';
+    '成本线 <b>¥' + fmt(costLine) + '</b>/万分（买分成本） · 保本线 <b>¥' + fmt(breakEvenLine) + '</b>/万分（成本+10%）';
 }
 
 // ═══════════════════════════════════════════
