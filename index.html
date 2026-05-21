@@ -140,6 +140,20 @@
   }
   .rate-unit { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
 
+  /* ── 积分成本 row ── */
+  .cost-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .cost-label { font-size: 14px; font-weight: 600; color: var(--primary); white-space: nowrap; }
+  .cost-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
   .tags-row {
     display: flex;
     gap: 6px;
@@ -562,11 +576,12 @@
 <!-- ═══ Container ═══ -->
 <div class="container">
 
-  <!-- ── 汇率 Banner ── -->
-  <div class="banner">
-    <div class="rate-row">
-      <span class="rate-label">💱 汇率</span>
-      <div class="rate-input-wrap">
+  <!-- ── 积分成本 Card ── -->
+  <div class="card">
+    <div class="card-title">💰 积分成本</div>
+    <div class="cost-row">
+      <span class="cost-label">💱 汇率</span>
+      <div class="cost-input-wrap">
         <div class="rate-stepper">
           <button class="stepper-btn minus" type="button" onclick="stepInput('rate',-0.01)">−</button>
           <input type="number" id="rate" value="6.8" step="0.01" min="5" max="10" inputmode="decimal">
@@ -575,10 +590,28 @@
         <span class="rate-unit">USD → CNY</span>
       </div>
     </div>
-    <div class="tags-row">
-      <span class="tag tag-green"><span class="tag-dot">●</span> 100%加赠 <span id="tag-cost">¥363</span>/万分</span>
-      <span class="tag tag-yellow"><span class="tag-dot">●</span> 80%加赠 <span id="tag-80">¥403</span>/万分</span>
-      <span class="tag tag-red"><span class="tag-dot">●</span> 日常价 <span id="tag-full">¥725</span>/万分</span>
+    <div class="input-stack" style="margin-top:8px;">
+      <div class="input-group">
+        <label for="price">💰 购买价格</label>
+        <div class="stepper">
+          <button class="stepper-btn minus" type="button" onclick="stepInput('price',-10)">−</button>
+          <input type="number" id="price" value="340" min="0" step="10" inputmode="numeric" placeholder="¥/万分">
+          <button class="stepper-btn plus" type="button" onclick="stepInput('price',10)">+</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="bonus">📊 加赠比例</label>
+        <div class="stepper">
+          <button class="stepper-btn minus" type="button" onclick="stepInput('bonus',-10)">−</button>
+          <input type="number" id="bonus" value="100" min="0" max="500" step="10" inputmode="numeric" placeholder="%">
+          <button class="stepper-btn plus" type="button" onclick="stepInput('bonus',10)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="tags-row" style="margin-top:10px;">
+      <span class="tag tag-green"><span class="tag-dot">●</span> <span id="tag-bonus-label">100%</span>加赠 <span id="tag-cost">¥340</span>/万分</span>
+      <span class="tag tag-yellow"><span class="tag-dot">●</span> 80%加赠 <span id="tag-80">¥378</span>/万分</span>
+      <span class="tag tag-red"><span class="tag-dot">●</span> 日常价 <span id="tag-full">¥680</span>/万分</span>
     </div>
   </div>
 
@@ -630,7 +663,7 @@
             <span>vs 成本线</span>
           </div>
           <div class="indicator" id="rv-vs-safe">
-            <span>vs 安全线</span>
+            <span>vs 保本线</span>
           </div>
         </div>
 
@@ -692,30 +725,45 @@ function stepInput(id, delta) {
 }
 
 // ═══════════════════════════════════════════
-// Rate
+// Cost inputs
 // ═══════════════════════════════════════════
 function getRate() {
   return parseFloat(document.getElementById('rate').value) || 6.8;
 }
+function getPrice() {
+  return parseFloat(document.getElementById('price').value) || 340;
+}
+function getBonus() {
+  return parseFloat(document.getElementById('bonus').value) || 100;
+}
+function getBasePrice() {
+  return getPrice() * (1 + getBonus() / 100);
+}
+function getCostLine() {
+  return getPrice();
+}
+function getBreakEvenLine() {
+  return getCostLine() * 1.1;
+}
 
-function updateRateDisplay() {
-  const r = getRate();
-  const cost = Math.round(r * 50);
-  const safe = Math.round(r * 60);
-  const cost80 = Math.round(r * 55.56);
-  const costFull = Math.round(r * 100);
-  document.getElementById('tag-cost').textContent = '¥' + cost;
-  document.getElementById('tag-80').textContent = '¥' + cost80;
-  document.getElementById('tag-full').textContent = '¥' + costFull;
+function updateCostDisplay() {
+  const p = getPrice();
+  const b = getBonus();
+  const base = getBasePrice();
+  const cost80 = base / 1.8;
+  const costFull = base;
+  document.getElementById('tag-bonus-label').textContent = b + '%';
+  document.getElementById('tag-cost').textContent = '¥' + fmt(p);
+  document.getElementById('tag-80').textContent = '¥' + fmt(cost80);
+  document.getElementById('tag-full').textContent = '¥' + fmt(costFull);
 }
 
 // ═══════════════════════════════════════════
 // Reference tables (two-column, static HTML)
 // ═══════════════════════════════════════════
 function buildRefTable(tableId, ptsList) {
-  const rate = getRate();
-  const costLine = rate * 50;
-  const breakEvenLine = costLine * 1.1;
+  const costLine = getCostLine();
+  const breakEvenLine = getBreakEvenLine();
 
   let html = '<div class="rt-head"><div class="col-pts">积分</div><div class="col-bad">不推荐</div><div class="col-mid">保本</div><div class="col-good">划算</div></div>';
   ptsList.forEach(function(pts) {
@@ -732,9 +780,8 @@ function buildRefTable(tableId, ptsList) {
 }
 
 function buildRefCards() {
-  const rate = getRate();
-  const costLine = rate * 50;
-  const breakEvenLine = costLine * 1.1;
+  const costLine = getCostLine();
+  const breakEvenLine = getBreakEvenLine();
 
   const ptsLeft = [10000, 12000, 15000, 18000, 20000, 22000, 25000, 30000];
   const ptsRight = [35000, 40000, 50000, 60000, 70000, 80000, 90000, 100000];
@@ -744,7 +791,7 @@ function buildRefCards() {
     + '<div class="ref-table">' + buildRefTable('tbl-right', ptsRight) + '</div>';
 
   document.getElementById('ref-footnote').innerHTML =
-    '成本线 <b>¥' + fmt(costLine) + '</b>/万分（买分成本） · 保本线 <b>¥' + fmt(breakEvenLine) + '</b>/万分（成本+10%）';
+    '成本线 <b>¥' + fmt(costLine) + '</b>/万分（当前买分成本） · 保本线 <b>¥' + fmt(breakEvenLine) + '</b>/万分（成本+10%）';
 }
 
 // ═══════════════════════════════════════════
@@ -756,8 +803,8 @@ function evalTarget() {
   const points = parseFloat(document.getElementById('target-points').value);
   const wrap = document.getElementById('result-wrap');
   const box = document.getElementById('result-box');
-  const costLine = rate * 50;
-  const safeLine = rate * 60;
+  const costLine = getCostLine();
+  const breakEvenLine = getBreakEvenLine();
 
   if (!cash || !points || points <= 0) {
     wrap.classList.remove('show');
@@ -777,7 +824,7 @@ function evalTarget() {
 
   // Indicators
   const vsCost = (val - costLine) / costLine * 100;
-  const vsSafe = (val - safeLine) / safeLine * 100;
+  const vsSafe = (val - breakEvenLine) / breakEvenLine * 100;
 
   const costEl = document.getElementById('rv-vs-cost');
   costEl.className = 'indicator ' + (vsCost >= 0 ? 'ok' : 'fail');
@@ -786,17 +833,17 @@ function evalTarget() {
     : '<span>🔴 低于成本线 <b>' + fmt(vsCost) + '%</b></span>';
 
   const safeEl = document.getElementById('rv-vs-safe');
-  if (val >= safeLine) {
+  if (val >= breakEvenLine) {
     safeEl.className = 'indicator ok';
-    safeEl.innerHTML = '<span>✅ 超过安全线 <b>+' + fmt(vsSafe) + '%</b></span>';
+    safeEl.innerHTML = '<span>✅ 超过保本线 <b>+' + fmt(vsSafe) + '%</b></span>';
   } else {
     safeEl.className = 'indicator warn';
-    safeEl.innerHTML = '<span>⚠️ 距安全线还差 <b>' + fmt(Math.abs(vsSafe)) + '%</b></span>';
+    safeEl.innerHTML = '<span>⚠️ 距保本线还差 <b>' + fmt(Math.abs(vsSafe)) + '%</b></span>';
   }
 
   // Title & advice & color
   let boxClass, title, advice;
-  if (val >= safeLine) {
+  if (val >= breakEvenLine) {
     boxClass = 'green';
     title = '✅ 非常划算，强烈推荐！';
     advice = '每万分价值 ¥' + fmt(val) + '，远高于成本线 ¥' + fmt(costLine) + '。'
@@ -804,7 +851,7 @@ function evalTarget() {
       + '建议在 100% 加赠促销时买入积分后立即兑换。';
   } else if (val >= costLine) {
     boxClass = 'yellow';
-    title = '⚠️ 刚过成本线，谨慎考虑';
+    title = '⚠️ 刚过成本线，保本区间';
     advice = '每万分价值 ¥' + fmt(val) + '，刚过成本线 ¥' + fmt(costLine) + '。'
       + (saving >= 0
         ? '每晚节省 ¥' + fmt(saving) + '，空间有限。已有积分可用，专门买分意义不大。'
@@ -832,13 +879,19 @@ function evalTarget() {
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
   const rateInput = document.getElementById('rate');
+  const priceInput = document.getElementById('price');
+  const bonusInput = document.getElementById('bonus');
   function onUpdate() {
-    updateRateDisplay();
+    updateCostDisplay();
     buildRefCards();
     evalTarget();
   }
   rateInput.addEventListener('input', onUpdate);
   rateInput.addEventListener('change', onUpdate);
+  priceInput.addEventListener('input', onUpdate);
+  priceInput.addEventListener('change', onUpdate);
+  bonusInput.addEventListener('input', onUpdate);
+  bonusInput.addEventListener('change', onUpdate);
 
   const cashInput = document.getElementById('target-cash');
   const ptsInput = document.getElementById('target-points');
