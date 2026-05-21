@@ -96,26 +96,37 @@
     gap: 6px;
   }
 
-  /* ── 积分成本 row ── */
-  .cost-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
+  /* ── Cost grid (2x2) ── */
+  .cost-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
-  .cost-label { font-size: 14px; font-weight: 600; color: var(--primary); white-space: nowrap; }
-  .cost-input-wrap {
+  .cost-grid .input-group { display: flex; flex-direction: column; gap: 4px; }
+  .cost-grid .input-group label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+  .input-unit {
+    font-size: 11px;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: 2px;
+  }
+  .cost-display {
+    height: 44px;
+    padding: 0 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 18px;
+    font-weight: 800;
+    width: 100%;
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--primary);
+    letter-spacing: -0.5px;
   }
 
-  .tags-row {
-    display: flex;
-    gap: 6px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-  }
+  .tags-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
   .tag {
     display: inline-flex;
     align-items: center;
@@ -487,6 +498,7 @@
       --yellow-bg: #451a03;
       --yellow-border: #f59e0b;
     }
+    .cost-display { background: #0f172a; color: #93c5fd; }
     .stat-item { background: rgba(0,0,0,0.2); }
     .result-advice { background: rgba(0,0,0,0.15); }
     .header::after { background: var(--bg); }
@@ -520,36 +532,41 @@
 <!-- ═══ Container ═══ -->
 <div class="container">
 
-  <!-- ── 积分成本 Card ── -->
+  <!-- ── 积分成本计算 Card ── -->
   <div class="card">
-    <div class="card-title">💰 积分成本</div>
-    <div class="cost-row">
-      <span class="cost-label">💱 汇率</span>
-      <div class="cost-input-wrap">
-        <div class="rate-stepper">
-          <button class="stepper-btn minus" type="button" onclick="stepInput('rate',-0.01)">−</button>
-          <input type="number" id="rate" value="6.8" step="0.01" min="5" max="10" inputmode="decimal">
-          <button class="stepper-btn plus" type="button" onclick="stepInput('rate',0.01)">+</button>
-        </div>
-        <span class="rate-unit">USD → CNY</span>
-      </div>
-    </div>
-    <div class="input-stack" style="margin-top:8px;">
+    <div class="card-title">💰 积分成本计算</div>
+    <div class="cost-grid">
       <div class="input-group">
-        <label for="price">💰 积分购买价格（美元/万分）</label>
+        <label for="price">💰 积分购买价格</label>
         <div class="stepper">
           <button class="stepper-btn minus" type="button" onclick="stepInput('price',-1)">−</button>
-          <input type="number" id="price" value="50" min="0" step="1" inputmode="numeric" placeholder="$/万分">
+          <input type="number" id="price" value="50" min="0" step="1" inputmode="numeric">
           <button class="stepper-btn plus" type="button" onclick="stepInput('price',1)">+</button>
         </div>
+        <div class="input-unit">美元/万分</div>
       </div>
       <div class="input-group">
         <label for="bonus">📊 积分加赠比例</label>
         <div class="stepper">
           <button class="stepper-btn minus" type="button" onclick="stepInput('bonus',-10)">−</button>
-          <input type="number" id="bonus" value="100" min="0" max="500" step="10" inputmode="numeric" placeholder="%">
+          <input type="number" id="bonus" value="100" min="0" max="500" step="10" inputmode="numeric">
           <button class="stepper-btn plus" type="button" onclick="stepInput('bonus',10)">+</button>
         </div>
+        <div class="input-unit">%</div>
+      </div>
+      <div class="input-group">
+        <label for="rate">💱 汇率</label>
+        <div class="stepper">
+          <button class="stepper-btn minus" type="button" onclick="stepInput('rate',-0.01)">−</button>
+          <input type="number" id="rate" value="6.8" step="0.01" min="5" max="10" inputmode="decimal">
+          <button class="stepper-btn plus" type="button" onclick="stepInput('rate',0.01)">+</button>
+        </div>
+        <div class="input-unit">USD → CNY</div>
+      </div>
+      <div class="input-group">
+        <label>🧮 积分成本</label>
+        <div class="cost-display" id="cost-display">¥340</div>
+        <div class="input-unit">人民币/万分</div>
       </div>
     </div>
   </div>
@@ -685,14 +702,10 @@ function getBreakEvenLine() {
 }
 
 function updateCostDisplay() {
-  const p = getPrice();
-  const r = getRate();
   const cny = getCostLineCNY();
   const b = getBonus();
-  const base = getBasePrice();
-  const cost80 = base / 1.8;
-  const costFull = base;
   document.getElementById('stat-bonus-label').textContent = b + '%';
+  document.getElementById('cost-display').textContent = '¥' + fmt(cny);
 }
 
 // ═══════════════════════════════════════════
