@@ -819,11 +819,13 @@ function evalTarget() {
 // Init
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
+  let ready = false;
   const rateInput = document.getElementById('rate');
   const priceInput = document.getElementById('price');
   const bonusInput = document.getElementById('bonus');
   function onCostUpdate() {
     updateCostDisplay();
+    if (!ready) return;
     buildRefCards();
     evalTarget();
   }
@@ -836,7 +838,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const cashInput = document.getElementById('target-cash');
   const ptsInput = document.getElementById('target-points');
-  function onEval() { evalTarget(); }
+  function onEval() { if (ready) evalTarget(); }
   cashInput.addEventListener('input', onEval);
   cashInput.addEventListener('change', onEval);
   ptsInput.addEventListener('input', onEval);
@@ -847,6 +849,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // ── Default state: hide result and ref table ──
   document.getElementById('result-wrap').style.display = 'none';
   document.getElementById('ref-wrap').innerHTML = '';
+  ready = true;
 
   // ── Register service worker (PWA offline support) ──
   if ('serviceWorker' in navigator) {
