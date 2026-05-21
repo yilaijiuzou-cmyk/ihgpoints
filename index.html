@@ -536,7 +536,7 @@
     </div>
     <div class="input-stack" style="margin-top:8px;">
       <div class="input-group">
-        <label for="price">💰 积分购买价格</label>
+        <label for="price">💰 积分购买价格（美元）</label>
         <div class="stepper">
           <button class="stepper-btn minus" type="button" onclick="stepInput('price',-1)">−</button>
           <input type="number" id="price" value="50" min="0" step="1" inputmode="numeric" placeholder="$/万分">
@@ -822,17 +822,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const rateInput = document.getElementById('rate');
   const priceInput = document.getElementById('price');
   const bonusInput = document.getElementById('bonus');
-  function onUpdate() {
+  function onCostUpdate() {
     updateCostDisplay();
     buildRefCards();
     evalTarget();
   }
-  rateInput.addEventListener('input', onUpdate);
-  rateInput.addEventListener('change', onUpdate);
-  priceInput.addEventListener('input', onUpdate);
-  priceInput.addEventListener('change', onUpdate);
-  bonusInput.addEventListener('input', onUpdate);
-  bonusInput.addEventListener('change', onUpdate);
+  rateInput.addEventListener('input', onCostUpdate);
+  rateInput.addEventListener('change', onCostUpdate);
+  priceInput.addEventListener('input', onCostUpdate);
+  priceInput.addEventListener('change', onCostUpdate);
+  bonusInput.addEventListener('input', onCostUpdate);
+  bonusInput.addEventListener('change', onCostUpdate);
 
   const cashInput = document.getElementById('target-cash');
   const ptsInput = document.getElementById('target-points');
@@ -842,7 +842,11 @@ document.addEventListener('DOMContentLoaded', function() {
   ptsInput.addEventListener('input', onEval);
   ptsInput.addEventListener('change', onEval);
 
-  onUpdate();
+  updateCostDisplay();
+
+  // ── Default state: hide result and ref table ──
+  document.getElementById('result-wrap').classList.remove('show');
+  document.getElementById('ref-wrap').innerHTML = '';
 
   // ── Register service worker (PWA offline support) ──
   if ('serviceWorker' in navigator) {
