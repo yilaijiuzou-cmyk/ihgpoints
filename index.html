@@ -96,50 +96,6 @@
     gap: 6px;
   }
 
-  /* ── Banner: 汇率 + 标签 ── */
-  .banner {
-    background: linear-gradient(135deg, #eff6ff 0%, #f8faff 100%);
-    border: 1px solid #bfdbfe;
-    border-radius: var(--radius);
-    padding: 14px 12px;
-    margin-top: 12px;
-  }
-  .rate-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-  }
-  .rate-row .rate-label { font-size: 14px; font-weight: 600; color: var(--primary); white-space: nowrap; }
-  .rate-input-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .rate-input-wrap input {
-    width: 80px;
-    height: 38px;
-    padding: 0 10px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xs);
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-    outline: none;
-    font-family: inherit;
-    color: var(--text);
-    background: #fff;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    -moz-appearance: textfield;
-  }
-  .rate-input-wrap input::-webkit-outer-spin-button,
-  .rate-input-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .rate-input-wrap input:focus {
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(0,87,179,0.15);
-  }
-  .rate-unit { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
-
   /* ── 积分成本 row ── */
   .cost-row {
     display: flex;
@@ -531,31 +487,19 @@
       --yellow-bg: #451a03;
       --yellow-border: #f59e0b;
     }
-    .banner { background: linear-gradient(135deg, #172554 0%, #1e3a5f 100%); border-color: #1e40af; }
-    .banner .rate-label { color: #93c5fd; }
-    .rate-input-wrap input { background: #1e293b; color: #e2e8f0; border-color: #475569; }
-    .tag-green { background: #14532d; color: #bbf7d0; }
-    .tag-yellow { background: #451a03; color: #fde68a; }
-    .tag-red { background: #450a0a; color: #fecaca; }
-    .ref-card { background: #1e293b; }
     .stat-item { background: rgba(0,0,0,0.2); }
     .result-advice { background: rgba(0,0,0,0.15); }
     .header::after { background: var(--bg); }
   }
 
   /* ── Wider phones / small tablets ── */
-  @media (min-width: 420px) {
-    .ref-grid { grid-template-columns: 1fr 1fr; }
-  }
   @media (min-width: 600px) {
     .container { padding: 0 20px; max-width: 520px; margin: 0 auto; }
-    .ref-grid { grid-template-columns: 1fr 1fr; }
     .header h1 { font-size: 24px; }
     .header { padding: 32px 24px 36px; }
   }
   @media (min-width: 900px) {
     .container { max-width: 800px; }
-    .ref-grid { grid-template-columns: 1fr 1fr 1fr; }
   }
 
   /* ── Print ── */
@@ -592,15 +536,15 @@
     </div>
     <div class="input-stack" style="margin-top:8px;">
       <div class="input-group">
-        <label for="price">💰 购买价格</label>
+        <label for="price">💰 积分购买价格</label>
         <div class="stepper">
-          <button class="stepper-btn minus" type="button" onclick="stepInput('price',-10)">−</button>
-          <input type="number" id="price" value="340" min="0" step="10" inputmode="numeric" placeholder="¥/万分">
-          <button class="stepper-btn plus" type="button" onclick="stepInput('price',10)">+</button>
+          <button class="stepper-btn minus" type="button" onclick="stepInput('price',-1)">−</button>
+          <input type="number" id="price" value="50" min="0" step="1" inputmode="numeric" placeholder="$/万分">
+          <button class="stepper-btn plus" type="button" onclick="stepInput('price',1)">+</button>
         </div>
       </div>
       <div class="input-group">
-        <label for="bonus">📊 加赠比例</label>
+        <label for="bonus">📊 积分加赠比例</label>
         <div class="stepper">
           <button class="stepper-btn minus" type="button" onclick="stepInput('bonus',-10)">−</button>
           <input type="number" id="bonus" value="100" min="0" max="500" step="10" inputmode="numeric" placeholder="%">
@@ -608,19 +552,14 @@
         </div>
       </div>
     </div>
-    <div class="tags-row" style="margin-top:10px;">
-      <span class="tag tag-green"><span class="tag-dot">●</span> <span id="tag-bonus-label">100%</span>加赠 <span id="tag-cost">¥340</span>/万分</span>
-      <span class="tag tag-yellow"><span class="tag-dot">●</span> 80%加赠 <span id="tag-80">¥378</span>/万分</span>
-      <span class="tag tag-red"><span class="tag-dot">●</span> 日常价 <span id="tag-full">¥680</span>/万分</span>
-    </div>
   </div>
 
-  <!-- ── 查询目标酒店 ── -->
+  <!-- ── 积分兑换房晚价值测算 ── -->
   <div class="card">
-    <div class="card-title">🔍 积分价值测算</div>
+    <div class="card-title">🔍 积分兑换房晚价值测算</div>
     <div class="input-stack">
       <div class="input-group">
-        <label for="target-cash">🏨 现金价（人民币）</label>
+        <label for="target-cash">🏨 房晚现金价（人民币）</label>
         <div class="stepper">
           <button class="stepper-btn minus" type="button" onclick="stepInput('target-cash',-100)">−</button>
           <input type="number" id="target-cash" value="350" min="0" step="100" inputmode="numeric" placeholder="输入现金价 ¥">
@@ -628,7 +567,7 @@
         </div>
       </div>
       <div class="input-group">
-        <label for="target-points">📌 所需积分</label>
+        <label for="target-points">📌 房晚积分价</label>
         <div class="stepper">
           <button class="stepper-btn minus" type="button" onclick="stepInput('target-points',-1000)">−</button>
           <input type="number" id="target-points" value="10000" min="0" step="1000" inputmode="numeric" placeholder="输入所需积分">
@@ -649,7 +588,7 @@
 
         <div class="result-stats">
           <div class="stat-item">
-            <div class="stat-label">100%促销买分<br>每晚成本</div>
+            <div class="stat-label"><span id="stat-bonus-label">100%</span>加赠买分<br>每晚成本</div>
             <div class="stat-value" id="rv-cost">¥0</div>
           </div>
           <div class="stat-item">
@@ -687,9 +626,8 @@
   <!-- ── Footer ── -->
   <div class="footer">
     数据仅供参考，以 IHG 官网实际兑换为准<br>
-    汇率联动，修改后所有数据自动更新<br>
-    首次汇率默认 6.8<br>
-    <span class="update-badge">Edit by yilaijiuzou</span>
+    所有输入联动更新计算结果<br>
+    <span class="update-badge">Made by yilaijiuzou</span>
   </div>
 
 </div>
@@ -731,29 +669,32 @@ function getRate() {
   return parseFloat(document.getElementById('rate').value) || 6.8;
 }
 function getPrice() {
-  return parseFloat(document.getElementById('price').value) || 340;
+  return parseFloat(document.getElementById('price').value) || 50;
 }
 function getBonus() {
   return parseFloat(document.getElementById('bonus').value) || 100;
 }
-function getBasePrice() {
-  return getPrice() * (1 + getBonus() / 100);
+function getCostLineCNY() {
+  return getPrice() * getRate();
 }
-function getCostLine() {
-  return getPrice();
+function getBasePrice() {
+  return getCostLineCNY() * (1 + getBonus() / 100);
 }
 function getBreakEvenLine() {
-  return getCostLine() * 1.1;
+  return getCostLineCNY() * 1.1;
 }
 
 function updateCostDisplay() {
   const p = getPrice();
+  const r = getRate();
+  const cny = getCostLineCNY();
   const b = getBonus();
   const base = getBasePrice();
   const cost80 = base / 1.8;
   const costFull = base;
   document.getElementById('tag-bonus-label').textContent = b + '%';
-  document.getElementById('tag-cost').textContent = '¥' + fmt(p);
+  document.getElementById('stat-bonus-label').textContent = b + '%';
+  document.getElementById('tag-cost').textContent = '¥' + fmt(cny);
   document.getElementById('tag-80').textContent = '¥' + fmt(cost80);
   document.getElementById('tag-full').textContent = '¥' + fmt(costFull);
 }
@@ -762,7 +703,7 @@ function updateCostDisplay() {
 // Reference tables (two-column, static HTML)
 // ═══════════════════════════════════════════
 function buildRefTable(tableId, ptsList) {
-  const costLine = getCostLine();
+  const costLine = getCostLineCNY();
   const breakEvenLine = getBreakEvenLine();
 
   let html = '<div class="rt-head"><div class="col-pts">积分</div><div class="col-bad">不推荐</div><div class="col-mid">保本</div><div class="col-good">划算</div></div>';
@@ -780,7 +721,7 @@ function buildRefTable(tableId, ptsList) {
 }
 
 function buildRefCards() {
-  const costLine = getCostLine();
+  const costLine = getCostLineCNY();
   const breakEvenLine = getBreakEvenLine();
 
   const ptsLeft = [10000, 12000, 15000, 18000, 20000, 22000, 25000, 30000];
@@ -803,7 +744,7 @@ function evalTarget() {
   const points = parseFloat(document.getElementById('target-points').value);
   const wrap = document.getElementById('result-wrap');
   const box = document.getElementById('result-box');
-  const costLine = getCostLine();
+  const costLine = getCostLineCNY();
   const breakEvenLine = getBreakEvenLine();
 
   if (!cash || !points || points <= 0) {
