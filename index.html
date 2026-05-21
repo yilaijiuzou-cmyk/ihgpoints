@@ -316,11 +316,13 @@
     margin-top: 12px;
     padding: 14px;
     border-radius: var(--radius-sm);
-    border-left: 4px solid transparent;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--text-light);
+    background: var(--card);
   }
-  .result-box.green { background: var(--green-bg); border-left-color: var(--green); }
-  .result-box.yellow { background: var(--yellow-bg); border-left-color: var(--yellow); }
-  .result-box.red { background: var(--red-bg); border-left-color: var(--red); }
+  .result-box.green { border-left-color: var(--green); }
+  .result-box.yellow { border-left-color: var(--yellow); }
+  .result-box.red { border-left-color: var(--red); }
 
   .result-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
 
@@ -345,7 +347,7 @@
     margin-bottom: 10px;
   }
   .stat-item {
-    background: rgba(255,255,255,0.6);
+    background: var(--bg);
     border-radius: var(--radius-xs);
     padding: 8px 10px;
   }
@@ -375,7 +377,7 @@
     line-height: 1.6;
     color: var(--text);
     padding: 8px 10px;
-    background: rgba(255,255,255,0.5);
+    background: var(--bg);
     border-radius: var(--radius-xs);
   }
 
@@ -582,7 +584,7 @@
 
   <!-- ── 查询目标酒店 ── -->
   <div class="card">
-    <div class="card-title">🔍 查询目标酒店</div>
+    <div class="card-title">🔍 积分价值测算</div>
     <div class="input-stack">
       <div class="input-group">
         <label for="target-cash">🏨 现金价（人民币）</label>
