@@ -1,4 +1,4 @@
-const CACHE = 'ihg-tool-v1';
+const CACHE = 'ihg-tool-v2';
 const URLS = [
   '.',
   'index.html',
@@ -23,6 +23,13 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // Network first for HTML, cache fallback for everything else
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then(r => r || fetch(e.request))
   );
