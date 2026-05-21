@@ -692,11 +692,7 @@ function updateCostDisplay() {
   const base = getBasePrice();
   const cost80 = base / 1.8;
   const costFull = base;
-  document.getElementById('tag-bonus-label').textContent = b + '%';
   document.getElementById('stat-bonus-label').textContent = b + '%';
-  document.getElementById('tag-cost').textContent = '¥' + fmt(cny);
-  document.getElementById('tag-80').textContent = '¥' + fmt(cost80);
-  document.getElementById('tag-full').textContent = '¥' + fmt(costFull);
 }
 
 // ═══════════════════════════════════════════
