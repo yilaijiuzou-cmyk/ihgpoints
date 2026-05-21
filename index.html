@@ -584,7 +584,30 @@
     </div>
 
     <!-- Result -->
-    <div class="result-wrap" id="result-wrap"></div>
+    <div class="result-wrap" id="result-wrap">
+      <div class="result-box" id="result-box">
+        <div class="result-title" id="result-title"></div>
+        <div class="result-hero">
+          <div class="hero-label">每万分价值</div>
+          <div class="hero-value" id="rv-cny">¥0 <span class="hero-unit">/万分</span></div>
+        </div>
+        <div class="result-stats">
+          <div class="stat-item">
+            <div class="stat-label"><span id="stat-bonus-label">100%</span>加赠买分<br>每晚成本</div>
+            <div class="stat-value" id="rv-cost">¥0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">每晚<br>节省 / 亏损</div>
+            <div class="stat-value" id="rv-save">¥0</div>
+          </div>
+        </div>
+        <div class="result-indicators">
+          <div class="indicator" id="rv-vs-cost"><span>vs 成本线</span></div>
+          <div class="indicator" id="rv-vs-safe"><span>vs 保本线</span></div>
+        </div>
+        <div class="result-advice" id="rv-advice"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ── 积分价 · 现金价对比参考 ── -->
@@ -705,33 +728,14 @@ function buildRefCards() {
 // ═══════════════════════════════════════════
 // Evaluate target hotel
 // ═══════════════════════════════════════════
-const RESULT_HTML = '<div class="result-box" id="result-box">'
-  + '<div class="result-title" id="result-title"></div>'
-  + '<div class="result-hero"><div class="hero-label">每万分价值</div>'
-  + '<div class="hero-value" id="rv-cny">¥0 <span class="hero-unit">/万分</span></div></div>'
-  + '<div class="result-stats">'
-  + '<div class="stat-item"><div class="stat-label"><span id="stat-bonus-label">100%</span>加赠买分<br>每晚成本</div>'
-  + '<div class="stat-value" id="rv-cost">¥0</div></div>'
-  + '<div class="stat-item"><div class="stat-label">每晚<br>节省 / 亏损</div>'
-  + '<div class="stat-value" id="rv-save">¥0</div></div></div>'
-  + '<div class="result-indicators">'
-  + '<div class="indicator" id="rv-vs-cost"><span>vs 成本线</span></div>'
-  + '<div class="indicator" id="rv-vs-safe"><span>vs 保本线</span></div></div>'
-  + '<div class="result-advice" id="rv-advice"></div></div>';
-
 function evalTarget() {
   const cash = parseFloat(document.getElementById('target-cash').value);
   const points = parseFloat(document.getElementById('target-points').value);
   const wrap = document.getElementById('result-wrap');
 
   if (!cash || !points || points <= 0) {
-    wrap.innerHTML = '';
+    wrap.classList.remove('show');
     return;
-  }
-
-  // Inject result HTML on first use
-  if (!wrap.innerHTML) {
-    wrap.innerHTML = RESULT_HTML;
   }
 
   const box = document.getElementById('result-box');
@@ -809,34 +813,30 @@ function evalTarget() {
 // Init
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
-  let ready = false;
   const rateInput = document.getElementById('rate');
   const priceInput = document.getElementById('price');
   const bonusInput = document.getElementById('bonus');
-  function onCostUpdate() {
+  function onUpdate() {
     updateCostDisplay();
-    if (!ready) return;
     buildRefCards();
     evalTarget();
   }
-  rateInput.addEventListener('input', onCostUpdate);
-  rateInput.addEventListener('change', onCostUpdate);
-  priceInput.addEventListener('input', onCostUpdate);
-  priceInput.addEventListener('change', onCostUpdate);
-  bonusInput.addEventListener('input', onCostUpdate);
-  bonusInput.addEventListener('change', onCostUpdate);
+  rateInput.addEventListener('input', onUpdate);
+  rateInput.addEventListener('change', onUpdate);
+  priceInput.addEventListener('input', onUpdate);
+  priceInput.addEventListener('change', onUpdate);
+  bonusInput.addEventListener('input', onUpdate);
+  bonusInput.addEventListener('change', onUpdate);
 
   const cashInput = document.getElementById('target-cash');
   const ptsInput = document.getElementById('target-points');
-  function onEval() { if (ready) evalTarget(); }
+  function onEval() { evalTarget(); }
   cashInput.addEventListener('input', onEval);
   cashInput.addEventListener('change', onEval);
   ptsInput.addEventListener('input', onEval);
   ptsInput.addEventListener('change', onEval);
 
-  updateCostDisplay();
-  document.getElementById('ref-wrap').innerHTML = '';
-  ready = true;
+  onUpdate();
 
   // ── Register service worker (PWA offline support) ──
   if ('serviceWorker' in navigator) {
